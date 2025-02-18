@@ -1,0 +1,17 @@
+# Core dependencies
+Django>=5.1.6
+
+# Data visualization
+plotly
+d3
+numpy
+pandas
+
+# Requests for API calls
+requests
+
+# Environment variables (optional)
+python-dotenv
+
+# Database (if using PostgreSQL)
+psycopg2-binary
