@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-Time Test Data Dashboard</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Plotly JS -->
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+    <style>
+        .card {
+            @apply bg-white shadow-lg rounded-lg p-6;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans">
+
+    <!-- Navbar -->
+    <nav class="bg-blue-600 text-white p-4 shadow-md">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-bold">📊 Real-Time Test Data Dashboard</h1>
+        </div>
+    </nav>
+
+    <!-- Dashboard Container -->
+    <div class="container mx-auto p-6">
+        
+        <!-- Grid Layout for Charts -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+            <!-- Line Chart -->
+            <div class="card">
+                <h2 class="text-xl font-semibold mb-4 text-blue-600 flex items-center">
+                    📈 Mileage Over Time
+                </h2>
+                <div id="line_chart"></div>
+            </div>
+
+            <!-- Bar Chart -->
+            <div class="card">
+                <h2 class="text-xl font-semibold mb-4 text-green-600 flex items-center">
+                    🚗 Number of Doors
+                </h2>
+                <div id="bar_chart"></div>
+            </div>
+
+            <!-- Scatter Plot -->
+            <div class="card">
+                <h2 class="text-xl font-semibold mb-4 text-red-600 flex items-center">
+                    🔴 Mileage vs Kilometrage
+                </h2>
+                <div id="scatter_chart"></div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        function updateCharts() {
+            fetch("/dashboard/api/data/")
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        console.error("Error:", data.error);
+                        return;
+                    }
+
+                    let layout = { 
+                        autosize: true,
+                        width: 350,  /* Makes graphs responsive */
+                        height: 300, /* Adjusts graph height */
+                        margin: { t: 40, b: 40, l: 50, r: 50 } 
+                    };
+
+                    // Update Line Chart (Mileage Over Time)
+                    Plotly.react("line_chart", [data.line_chart], layout);
+
+                    // Update Bar Chart (Number of Doors)
+                    Plotly.react("bar_chart", [data.bar_chart], layout);
+
+                    // Update Scatter Plot (Mileage vs Kilometrage)
+                    Plotly.react("scatter_chart", [data.scatter_chart], layout);
+                })
+                .catch(error => console.error("Fetch Error:", error));
+        }
+
+        // Refresh every 3 seconds
+        setInterval(updateCharts, 3000);
+        updateCharts();
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>D3.js Real-Time Data Visualization</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- D3.js -->
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+
+    <style>
+        .bar {
+            fill: steelblue;
+        }
+        .bar:hover {
+            fill: orange;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans">
+
+    <!-- Navbar -->
+    <nav class="bg-purple-600 text-white p-4 shadow-md">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-bold">📊 D3.js Real-Time Data Dashboard</h1>
+            <a href="/dashboard/" class="bg-white text-purple-600 px-4 py-2 rounded-md shadow-md hover:bg-gray-200">
+                🔙 Back to Plotly Dashboard
+            </a>
+        </div>
+    </nav>
+
+    <!-- Dashboard Container -->
+    <div class="container mx-auto p-6">
+        
+        <!-- Bar Chart -->
+        <div class="bg-white shadow-lg rounded-lg p-6">
+            <h2 class="text-xl font-semibold mb-4 text-blue-600">📊 Number of Doors (D3.js Bar Chart)</h2>
+            <svg id="d3_bar_chart" width="900" height="400"></svg>
+        </div>
+
+    </div>
+
+    <script>
+        // Fetch and update data every 3 seconds
+        function updateD3Chart() {
+            fetch("/dashboard/api/data/")
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        console.error("Error:", data.error);
+                        return;
+                    }
+
+                    // Extract data for D3.js
+                    let dataset = data.bar_chart.y;  // Number of doors
+                    let xValues = data.bar_chart.x;  // Time index
+
+                    // Select SVG
+                    let svg = d3.select("#d3_bar_chart");
+
+                    // Define scaling
+                    let xScale = d3.scaleBand()
+                        .domain(xValues)
+                        .range([50, 850])
+                        .padding(0.3);
+
+                    let yScale = d3.scaleLinear()
+                        .domain([0, d3.max(dataset) + 1])
+                        .range([350, 50]);
+
+                    // Bind data to bars
+                    let bars = svg.selectAll("rect").data(dataset);
+
+                    // ENTER (new elements)
+                    bars.enter()
+                        .append("rect")
+                        .merge(bars)
+                        .transition().duration(500)
+                        .attr("x", (d, i) => xScale(i))
+                        .attr("y", d => yScale(d))
+                        .attr("width", xScale.bandwidth())
+                        .attr("height", d => 350 - yScale(d))
+                        .attr("fill", "steelblue");
+
+                    // EXIT (remove old elements)
+                    bars.exit().remove();
+
+                    // Add X Axis
+                    svg.selectAll(".x-axis").remove();
+                    svg.append("g")
+                        .attr("transform", "translate(0, 350)")
+                        .attr("class", "x-axis")
+                        .call(d3.axisBottom(xScale));
+
+                    // Add Y Axis
+                    svg.selectAll(".y-axis").remove();
+                    svg.append("g")
+                        .attr("transform", "translate(50, 0)")
+                        .attr("class", "y-axis")
+                        .call(d3.axisLeft(yScale));
+                })
+                .catch(error => console.error("Fetch Error:", error));
+        }
+
+        // Refresh every 3 seconds
+        setInterval(updateD3Chart, 3000);
+        updateD3Chart();
+    </script>
+
+</body>
+</html>
