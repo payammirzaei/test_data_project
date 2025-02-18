@@ -1,5 +1,5 @@
 # Core dependencies
-Django>=5.1.6
+Django>=5.0,<5.1
 
 # Data visualization
 plotly
@@ -13,5 +13,9 @@ requests
 # Environment variables (optional)
 python-dotenv
 
-# Database (if using PostgreSQL)
+# Database (If using SQLite, remove `psycopg2-binary`)
+# PostgreSQL support (remove if using SQLite)
 psycopg2-binary
+
+# Additional Django utilities
+django-environ
