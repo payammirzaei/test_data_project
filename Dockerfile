@@ -1,23 +1,25 @@
-# Use Python 3.10 (or later) instead of 3.9
+# Use Python 3.10 as base image
 FROM python:3.10
 
 # Set the working directory inside the container
 WORKDIR /app
 
-# Copy only requirements first to leverage Docker caching
+# Copy only requirements.txt first (for better Docker caching)
 COPY requirements.txt .
 
-# Upgrade pip and install dependencies
+# Create a virtual environment inside the container
 RUN python -m venv venv
 ENV PATH="/app/venv/bin:$PATH"
-RUN pip install --upgrade pip setuptools wheel
-RUN pip install -r requirements.txt
+
+# Upgrade pip and install dependencies (with --no-cache-dir to prevent cache issues)
+RUN pip install --no-cache-dir --upgrade pip setuptools wheel
+RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the rest of the project files
 COPY . .
 
-# Expose the application port (if needed)
+# Expose port 8000 (for Django development server)
 EXPOSE 8000
 
-# Default command to run the application
-CMD ["python3", "manage.py", "runserver", "0.0.0.0:8000"]
+# Default command to run the Django app
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
