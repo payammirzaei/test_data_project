@@ -1,19 +1,23 @@
-# Use an official Python runtime as base image
-FROM python:3.9
+# Use Python 3.10 (or later) instead of 3.9
+FROM python:3.10
 
 # Set the working directory inside the container
 WORKDIR /app
 
-# Copy project files into the container
+# Copy only requirements first to leverage Docker caching
+COPY requirements.txt .
+
+# Upgrade pip and install dependencies
+RUN python -m venv venv
+ENV PATH="/app/venv/bin:$PATH"
+RUN pip install --upgrade pip setuptools wheel
+RUN pip install -r requirements.txt
+
+# Copy the rest of the project files
 COPY . .
 
-# Create a virtual environment inside Docker
-RUN python3 -m venv venv
-ENV PATH="/app/venv/bin:$PATH"
+# Expose the application port (if needed)
+EXPOSE 8000
 
-# Install dependencies
-RUN pip install --upgrade pip setuptools wheel
-RUN pip install --upgrade pip && pip install -r requirements.txt
-
-# Command to run the application (Modify if needed)
-CMD ["python3", "main.py", "runserver"]
+# Default command to run the application
+CMD ["python3", "manage.py", "runserver", "0.0.0.0:8000"]
