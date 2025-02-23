@@ -17,3 +17,6 @@ psycopg2-binary
 
 # Additional Django utilities
 django-environ
+
+# Tailwind CSS integration for Django
+django-tailwind
