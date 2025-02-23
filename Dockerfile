@@ -12,6 +12,7 @@ RUN python3 -m venv venv
 ENV PATH="/app/venv/bin:$PATH"
 
 # Install dependencies
+RUN pip install --upgrade pip setuptools wheel
 RUN pip install --upgrade pip && pip install -r requirements.txt
 
 # Command to run the application (Modify if needed)
