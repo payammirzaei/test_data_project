@@ -3,7 +3,6 @@ Django>=5.0,<5.1
 
 # Data visualization
 plotly
-d3
 numpy
 pandas
 
@@ -13,8 +12,7 @@ requests
 # Environment variables (optional)
 python-dotenv
 
-# Database (If using SQLite, remove `psycopg2-binary`)
-# PostgreSQL support (remove if using SQLite)
+# Database (Remove `psycopg2-binary` if using SQLite)
 psycopg2-binary
 
 # Additional Django utilities
